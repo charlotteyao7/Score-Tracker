@@ -90,17 +90,23 @@ def add():
         return redirect(url_for("matches"))
     
     
-@app.route("/matches")
+@app.route("/matches", methods=["GET", "POST"])
 def matches():
-    # only show the matches page if the user is logged in
-    if "username" in session:
-        this_user = db_session.query(User).where(User.username == session["username"]).first()
-        all_matches = this_user.matches
-        print(this_user)
-        print(all_matches)
-        return render_template("matches.html", user=session["username"], matches=all_matches)
-    else:
-        return redirect(url_for("signin"))
+    if request.method == "GET":
+        # only show the matches page if the user is logged in
+        if "username" in session:
+            this_user = db_session.query(User).where(User.username == session["username"]).first()
+            all_matches = this_user.matches
+            return render_template("matches.html", user=session["username"], matches=all_matches)
+        else:
+            return redirect(url_for("signin"))
+    elif request.method == "POST":
+        # delete the match from the database
+        match_id = request.form["match"]
+        match_to_delete = db_session.query(Match).where(Match.id == match_id).first()
+        db_session.delete(match_to_delete)
+        db_session.commit()
+        return redirect(url_for("matches"))
 
 @app.route("/logout")
 def logout():

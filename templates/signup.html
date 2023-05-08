@@ -40,6 +40,13 @@
           <label for="password">Create Password:</label>
           <input type="password" class="form-control" id="password" name="password2" placeholder="Confirm your password">
         </div>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for msg in messages %}
+                  <p class="error">{{msg}}</p>
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
         <button type="submit" class="btn btn-primary btn-signin">Sign Up</button>
       </form>
     </div>
